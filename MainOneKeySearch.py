@@ -1,10 +1,7 @@
-from operator import itemgetter
 from PIL import Image
 import PIL
-from matplotlib.pyplot import axis
 import numpy as np
 import os
-import time
 # Assuming all images are of the same size in the directory
 
 # Declaration of all variables
@@ -17,10 +14,12 @@ p1 = []
 p2 = []
 p3 = []
 p4 = []
+p5 = []
 p1C = []
 p2C = []
 p3C = []
 p4C = []
+p5C = []
 diagonal = []
 sumPosOffset = []
 sumNegOffset = []
@@ -30,6 +29,7 @@ sumNegOffsetP4 = []
 sumDiagonalP4 = []
 sumP1 = []
 sumP3 = []
+sumP5 = []
 barcodes = []
 barcodesDic = {}
 
@@ -37,7 +37,6 @@ barcodesDic = {}
 cwd = os.getcwd()
 MNIST_path = os.path.join(cwd, 'MNIST_DS')
 classes = os.listdir(MNIST_path)
-
 
 # loop through num (1-10) and save all image names into image files
 for c in classes:
@@ -123,6 +122,8 @@ def barcodeGenerate(imagesDic):
 
                 # Projection 1 horizontal sum
                 sumP1 = list(map(sum, v))
+                # Projection 5 inverse horizontal sum
+                sumP5 = sumP1[::-1]
                 # Projection 3 vertical sum
                 sumP3 = np.sum(v, axis=0)
                 sumP3 = sumP3[::-1]
@@ -130,6 +131,7 @@ def barcodeGenerate(imagesDic):
         # Get diagonal Sum for P2 and P4
         sumDiagonal.append(sum(np.diagonal(v, 0, 0, 1)))
         sumDiagonalP4.append(sum(np.diagonal(np.fliplr(v), 0, 0, 1)))
+
         # Reverse the sum to get values in proper order
         sumPosOffset.reverse()
         sumNegOffsetP4.reverse()
@@ -139,14 +141,16 @@ def barcodeGenerate(imagesDic):
         p2 = sumPosOffset+sumDiagonal+sumNegOffset
         p3 = sumP3
         p4 = sumNegOffsetP4+sumDiagonalP4+sumPosOffsetP4
+        p5 = sumP5
 
         # Generate Barcodes
         p1C = generate_c(p1)
         p2C = generate_c(p2)
         p3C = generate_c(p3)
         p4C = generate_c(p4)
-        barcodes = p1C+p2C+p3C + p4C
+        p5C = generate_c(p5)
 
+        barcodes = p1C + p2C + p3C + p4C + p5C
         # Store all barcodes into a dictionary with key
         if (counter % 10 == 0):
             imageCounter += 1
@@ -163,6 +167,8 @@ def barcodeGenerate(imagesDic):
         sumDiagonalP4.clear()
         sumNegOffsetP4.clear()
         sumP1.clear()
+        sumP5.clear()
+
     return barcodesDic
 
 
@@ -170,21 +176,19 @@ print("\nWelcome to a small scale Content-Based Image Retrieval Using Barcode Pr
 print("This program does the following:")
 print("1. There are a list of 100, 28 x 28 pixel Images. 10 each from Numbers 1-9")
 print("2. This program first goes through all Images and converts it into a pixelated array using Pillow, a python library")
-print("3. Then using the Barcode funtion the program goes through each pixelated array and creates four projections")
+print("3. Then using the Barcode funtion the program goes through each pixelated array and creates five projections")
 print("\t A. The First projection is a horizontal sum of each row")
 print("\t B. The Second projection is the sum from each of the positive offset diagonals ")
 print("\t C. The Third projection is a vertical sum of each column")
 print("\t D. The Fourth projection is the sum from each of the negative offset diagonals ")
+print("\t D. The Fifth projection is the sum of each reverse horizontal ")
 print("4. The projection are then converted into barcodes by calculating the threshold values and stored into a Dictionary")
 print("5. The final part of this program implements a search function which you may use to test the accuracy of this program")
 print("\nBARCODES ARE BEING GENERATED\n")
 
 
-# runtime test of Barcode generator function
-start = time.time()
 # Store barcodes into a dictionary
 barcodesDic = barcodeGenerate(imagesDic)
-end = time.time()
 
 # Store barcodes into a file
 with open('Barcodes.txt', 'w') as f:
@@ -199,6 +203,7 @@ with open('Barcodes.txt', 'w') as f:
 # Close file
 f.close()
 
+
 imageClass = 0
 imageNum = 0
 
@@ -208,9 +213,9 @@ print("BARCODES HAVE BEEN GENERATED:\n")
 print("Barcodes with keys have been stored into Barcodes.txt\n")
 print("Which Image would you like to use a query image to test accuracy of this program:\n")
 
-imageClass = input("Choose Image Number from 0-9: ")
+imageClass = input("Choose Image Class from 0-9: ")
 while int(imageClass) < 0 or int(imageClass) > 9:
-    imageClass = input("Choose Image Number from 0-9: ")
+    imageClass = input("Choose Image Class from 0-9: ")
 
 imageNum = input("Choose a random image of number from 0-9: ")
 while int(imageNum) < 0 or int(imageNum) > 9:
@@ -224,56 +229,47 @@ key = "{}:{}".format(imageClass, imageNum)
 def imageSearch(key, barcodesDic):
 
     hammingDistances = {}
-    K = 10
     # Copy Dictionary and remove image to be searched
     searchDic = barcodesDic.copy()
     queryImage = barcodesDic[key]
     # Get key and class of Image to be searched
     queryImageClass = key
     queryImageClass = queryImageClass[0]
-    hit = 0
-    retrvAccuracy = 0
+    hit = False
 
     # Delete query image from dictionary
     del searchDic[key]
 
-    # Convert query image barcode values into sunsequent seperate strings to compare
+    # Convert test image barcode values into sunsequent seperate characters and store in string to compare
     string_c1 = [str(n) for n in queryImage]
 
     # Comapre with each value in dictionary
     for k, v in searchDic.items():
-        # Convert test image barcode values into sunsequent seperate strings to compare
+        # Convert test image barcode values into sunsequent seperate characters and store in string to compare
         string_c2 = [str(n) for n in v]
         # Use hamming distance to find distance between subsequent 0 and 1 bits
         hammingDistances[k] = hamming_distance(
             ''.join(string_c1), ''.join(string_c2))
 
-    # Return and store keys and values of 10 images with the least hamming distance
-    similarImages = dict(
-        sorted(hammingDistances.items(), key=itemgetter(1))[:K])
+    # Get key of value with smalles hamming ditsances
+    similarImageKey = min(hammingDistances, key=hammingDistances.get)
+    imageClass = similarImageKey[0]
 
-    # print(str(similarImages))
+    # test if it is a hit or miss
+    if queryImageClass == imageClass:
+        hit = True
 
-    # Calculate how many hits there were by comparing keys of similarImages and query image class
-    for k, v in similarImages.items():
-        imageClass = k[0]
-        if queryImageClass == imageClass:
-            hit += 1
+    print("\n-------------------------------------------------------\n")
+    print("\t\t\tResults:\n")
+    print("The key of the most similar Image is: ", similarImageKey)
 
-    # Calculate retrieval accuracy
-    retrvAccuracy = hit/K * 100
-
-    # for key, value in hammingDistances.items():
-    #print(key, ": ", value, "\n")
-
-    return retrvAccuracy
+    return hit
 
 
 # Find accuracy of image search
 accuracy = imageSearch(key, barcodesDic)
 
-print("\nThe retrieval accuracy of ", imageClass,
-      ":", imageNum, " is: ", accuracy, "%")
-
-total = end - start
-# print(total)
+if (accuracy == True):
+    print("\n\t\t\tIt is a Hit\n")
+else:
+    print("\n\t\t\tIt is a Miss\n")
