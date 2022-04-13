@@ -1,3 +1,4 @@
+import cowsay
 from PIL import Image
 import PIL
 import numpy as np
@@ -270,6 +271,6 @@ def imageSearch(key, barcodesDic):
 accuracy = imageSearch(key, barcodesDic)
 
 if (accuracy == True):
-    print("\n\t\t\tIt is a Hit\n")
+    print(cowsay.get_output_string('trex', "\n\t\t\tIt is a HIT"))
 else:
-    print("\n\t\t\tIt is a Miss\n")
+    cowsay.cow("\n\t\t\tIt is a MISS")

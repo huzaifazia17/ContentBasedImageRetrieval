@@ -283,6 +283,7 @@ accuracy = imageSearch(key, barcodesDic)
 
 print("\n-------------------------------------------------------\n")
 print("\t\t\tResults:")
+
 print("\nThe retrieval accuracy of ", imageClass,
       ":", imageNum, " is: ", accuracy, "%\n")
 
