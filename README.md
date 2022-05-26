@@ -22,7 +22,7 @@ To view the One Key method visit the [MainOneKeySearch](https://github.com/huzai
 
 To view the overall accuracy of each program visit the respective Test Driver files. 
 
-For more in-dpeth information please read the [Project Report](https://github.com/huzaifazia17/ContentBasedImageRetrieval/blob/main/CBIR-Report.pdf)
+For more in-depth information please read the [Project Report](https://github.com/huzaifazia17/ContentBasedImageRetrieval/blob/main/CBIR-Report.pdf)
 
 ## Barcodes
 
