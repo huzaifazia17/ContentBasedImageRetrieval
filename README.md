@@ -3,12 +3,12 @@ Welcome to a small scale Content-Based Image Retrieval Using Barcode Proram
 This program does the following:
 1. There are a list of 100, 28 x 28 pixel Images. 10 each from Numbers 1-9
 2. This program first goes through all Images and converts it into a pixelated array using Pillow, a python library
-3. Then using the Barcode funtion the program goes through each pixelated array and creates five projections <\br>
-  A. The First projection is a horizontal sum of each row <\ br>
-  B. The Second projection is the sum from each of the positive offset diagonals <\ br>
-  C. The Third projection is a vertical sum of each column <\ br>
-  D. The Fourth projection is the sum from each of the negative offset diagonals <\ br>
-  E. The Fifth projection is the sum of each reverse horizontal <\ br>
+3. Then using the Barcode funtion the program goes through each pixelated array and creates five projections <br />
+  A. The First projection is a horizontal sum of each row <br />
+  B. The Second projection is the sum from each of the positive offset diagonals <br />
+  C. The Third projection is a vertical sum of each column <br />
+  D. The Fourth projection is the sum from each of the negative offset diagonals <br />
+  E. The Fifth projection is the sum of each reverse horizontal <br />
 4. The projection are then converted into barcodes by calculating the threshold values and stored into a Dictionary
 5. The final part of this program implements a search function which you may use to test the accuracy of this program
 
