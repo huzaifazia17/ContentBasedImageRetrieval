@@ -30,4 +30,4 @@ You can find the list of barcodes in [Barcodes.txt](https://github.com/huzaifazi
 
 ## Accuracy
 
-You can find teh accuracy fo each key for the 10 Key method in [Accuracy.txt](https://github.com/huzaifazia17/ContentBasedImageRetrieval/blob/main/accuracy.txt)
+You can find the accuracy of each key for the 10 Key method in [Accuracy.txt](https://github.com/huzaifazia17/ContentBasedImageRetrieval/blob/main/accuracy.txt)
